@@ -28,6 +28,8 @@ See `docs/RESEARCH.md` (findings, risks) and `docs/PLAN.md` (files, data model, 
 - Stack: TypeScript on Node 22 (`tsx`), Supabase Postgres schema `heist` in project `rkjh-seo`, DataForSEO for keyword data (shared monthly budget in `public.api_spend`).
 - `npm run recon -- --competitor <domain>` / `--all`: sitemaps → `heist.sitemap_urls` → enrich → `heist.topics` + `out/recon_<competitor>_<date>.csv`.
 - `npm run recon:ours`: our own sitemap for cannibalisation checks.
+- `/heist-cluster`: `cluster:export` (pre-drops no-demand and page-1–2 topics, writes ≤200-row batches) → `clusterer` subagent (haiku) per batch → `cluster:import` (zod-validated, idempotent, scores) → `cluster:top` → human picks → `cluster:pick -- <ids>`.
+- Score (0–100) = 35% est. traffic (log) + 20% ease (100−KD) + 25% fit + 20% information gain.
 - MCP `rkjh-clone` (`.mcp.json`): read-only `domain_organic_keywords`, `keyword_gap`, `keyword_metrics`.
 - `npm run typecheck` before committing.
 - Status flow: `draft → qa_passed → in_review → approved | rejected → scheduled → published` (enforced by trigger `heist.articles_guard`).

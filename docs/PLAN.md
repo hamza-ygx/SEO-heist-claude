@@ -18,7 +18,8 @@ mcp/clone-server.ts                # tools: domain_organic_keywords, keyword_gap
 recon/sitemap.ts                   # robots → sitemaps → index/.gz → filter → slug→topic
 recon/enrich.ts                    # per-URL traffic/top kw/volume/KD via MCP-equivalent lib calls
 recon/ours.ts                      # our sitemap + GSC/clone positions → coverage set
-cluster/export.ts, cluster/import.ts   # batch ≤200 rows to/from the clusterer agent
+cluster/{export,import,score,top,pick}.ts   # batches ≤200 rows ↔ clusterer agent; scoring; top-30; human pick
+.claude/skills/heist-cluster/SKILL.md   # added (not in the original list) to orchestrate Phase 2
 brief/, drafts/                    # briefs/<slug>.md, drafts/<slug>.md + .qa.json (or DB-only if repo stays public)
 qa/checks.ts                       # deterministic checks: lengths, n-gram overlap, JSON-LD parse, dup vs our pages
 review/queue.ts, review/approve.ts # queue listing; the only writer of approved_by/approved_at

@@ -10,7 +10,11 @@
     "typecheck": "tsc --noEmit",
     "mcp": "tsx mcp/clone-server.ts",
     "recon": "tsx recon/run.ts",
-    "recon:ours": "tsx recon/ours.ts"
+    "recon:ours": "tsx recon/ours.ts",
+    "cluster:export": "tsx cluster/export.ts",
+    "cluster:import": "tsx cluster/import.ts",
+    "cluster:top": "tsx cluster/top.ts",
+    "cluster:pick": "tsx cluster/pick.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",
