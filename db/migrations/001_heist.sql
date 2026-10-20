@@ -1,4 +1,5 @@
 begin;
+set local lock_timeout = '5s';
 
 create schema if not exists heist;
 
@@ -131,7 +132,7 @@ create table if not exists heist.settings (
 );
 insert into heist.settings (id) values (true) on conflict do nothing;
 
-create or replace function heist.articles_guard() returns trigger language plpgsql as $$
+create or replace function heist.articles_guard() returns trigger language plpgsql set search_path = heist, pg_temp as $$
 declare
   is_ymyl boolean;
   qualified boolean;
@@ -218,8 +219,7 @@ grant execute on function heist.approve(text, text) to heist_approver;
 grant execute on function heist.revoke_approval(text, text) to heist_app, heist_approver;
 grant select on heist.articles, heist.reviewers, heist.clusters to heist_approver;
 
-drop trigger if exists articles_guard on heist.articles;
-create trigger articles_guard before insert or update on heist.articles for each row execute function heist.articles_guard();
+create or replace trigger articles_guard before insert or update on heist.articles for each row execute function heist.articles_guard();
 
 grant select, insert, update, delete on heist.sites, heist.sitemap_urls, heist.recon_runs, heist.topics, heist.clusters to heist_app;
 grant select on heist.reviewers, heist.settings to heist_app;
@@ -232,24 +232,24 @@ grant select on public.dfs_keywords, public.gsc_query_daily, public.projects, pu
 grant insert, update on public.dfs_keywords to heist_app;
 grant insert, update (cost) on public.api_spend to heist_app;
 
-drop policy if exists heist_read on public.dfs_keywords;
-create policy heist_read on public.dfs_keywords for select to heist_app using (true);
-drop policy if exists heist_write on public.dfs_keywords;
-create policy heist_write on public.dfs_keywords for insert to heist_app with check (true);
-drop policy if exists heist_update on public.dfs_keywords;
-create policy heist_update on public.dfs_keywords for update to heist_app using (true) with check (true);
-
-drop policy if exists heist_read on public.gsc_query_daily;
-create policy heist_read on public.gsc_query_daily for select to heist_app using (true);
-drop policy if exists heist_read on public.projects;
-create policy heist_read on public.projects for select to heist_app using (true);
-
-drop policy if exists heist_read on public.api_spend;
-create policy heist_read on public.api_spend for select to heist_app using (provider = 'dataforseo');
-drop policy if exists heist_insert on public.api_spend;
-create policy heist_insert on public.api_spend for insert to heist_app with check (provider = 'dataforseo' and by = 'heist');
-drop policy if exists heist_update on public.api_spend;
-create policy heist_update on public.api_spend for update to heist_app using (by = 'heist') with check (by = 'heist');
+do $$
+declare p record;
+begin
+  for p in select * from (values
+    ('dfs_keywords', 'heist_read', 'create policy heist_read on public.dfs_keywords for select to heist_app using (true)'),
+    ('dfs_keywords', 'heist_write', 'create policy heist_write on public.dfs_keywords for insert to heist_app with check (true)'),
+    ('dfs_keywords', 'heist_update', 'create policy heist_update on public.dfs_keywords for update to heist_app using (true) with check (true)'),
+    ('gsc_query_daily', 'heist_read', 'create policy heist_read on public.gsc_query_daily for select to heist_app using (true)'),
+    ('projects', 'heist_read', 'create policy heist_read on public.projects for select to heist_app using (true)'),
+    ('api_spend', 'heist_read', 'create policy heist_read on public.api_spend for select to heist_app using (provider = ''dataforseo'')'),
+    ('api_spend', 'heist_insert', 'create policy heist_insert on public.api_spend for insert to heist_app with check (provider = ''dataforseo'' and by = ''heist'')'),
+    ('api_spend', 'heist_update', 'create policy heist_update on public.api_spend for update to heist_app using (by = ''heist'') with check (by = ''heist'')')
+  ) as t(tbl, pol, stmt) loop
+    if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = p.tbl and policyname = p.pol) then
+      execute p.stmt;
+    end if;
+  end loop;
+end $$;
 
 insert into heist.sites (domain, role, scope_prefix) values
   ('rkjh.se', 'ours', null),
