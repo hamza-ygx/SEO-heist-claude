@@ -1,13 +1,13 @@
 # Phase 0 — Research
 
-Date: 2026-10-20 · Scope: internal site (RKJH) · Status: **awaiting approval**
+Date: 2026-10-20 · Scope: internal site (RKJH) · Status: **approved 2026-10-20**
 
 ## Config (confirmed with Hamza)
 
 | Field | Value |
 |---|---|
 | OUR_SITE | https://rkjh.se (Semrush/clone project is `www.rkjh.se`) |
-| COMPETITORS | **Open** — to be picked from the shortlist in §6 |
+| COMPETITORS | cedra.se, bakertillyhalmstad.se, azets.com (`/sv-se/` only; path unverified until reachable), metricaccounting.se (4, one over the prompt's 1–3; DataForSEO cost is negligible) |
 | CMS | WordPress + Yoast SEO (unverified, see §2) |
 | CONTENT_LANG | Swedish |
 | SEMRUSH_CLONE | Live: `charinrps-ai/rkjh-seo` (see §1) |
@@ -18,6 +18,8 @@ Date: 2026-10-20 · Scope: internal site (RKJH) · Status: **awaiting approval**
 | YMYL | Allowed: an auktoriserad revisor is the named author |
 | Publish guard | Inside `publish/cms` **and** a `PreToolUse` hook |
 | Git | Commit and push to `claude/new-session-ykj773` after each phase |
+| Weekly cap | 3/week for 8 weeks (`cap_review_after`), then a human decision; hard max 30 |
+| Repo | Owner will make it private |
 
 ## 1. The Semrush clone
 

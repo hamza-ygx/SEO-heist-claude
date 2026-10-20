@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "rkjh-clone": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["tsx", "${CLAUDE_PROJECT_DIR:-.}/mcp/clone-server.ts"]
+    }
+  }
+}
